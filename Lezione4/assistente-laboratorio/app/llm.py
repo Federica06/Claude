@@ -3,6 +3,7 @@
 from langchain_openai import ChatOpenAI
 
 from app.config import Config
+from app.tools import tooltime
 
 
 def crea_llm(config: Config):
@@ -15,4 +16,4 @@ def crea_llm(config: Config):
         temperature=0.2,
         timeout=300,
         max_tokens=4096,
-    )
+    ).bind_tools([tooltime])
