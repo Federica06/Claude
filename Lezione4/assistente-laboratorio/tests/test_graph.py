@@ -38,6 +38,26 @@ def test_risposta_vuota_sostituita(testo, caplog):
     assert any(r.levelno == logging.WARNING for r in caplog.records)
 
 
+def turno(grafo, cronologia, testo):
+    """Stesso schema della CLI: cronologia + nuova domanda, steps da zero."""
+    return grafo.invoke({"messages": cronologia + [HumanMessage(testo)], "steps": 0})
+
+
+def test_due_turni_senza_duplicazioni_risposta_diretta():
+    grafo = costruisci_grafo(ModelloFinto([AIMessage("uno"), AIMessage("due")]), 5)
+
+    risultato = turno(grafo, [], "prima")
+    cronologia = risultato["messages"]
+    assert len(cronologia) == 2
+    assert risultato["steps"] == 0
+
+    risultato = turno(grafo, cronologia, "seconda")
+    cronologia = risultato["messages"]
+    assert [m.content for m in cronologia] == ["prima", "uno", "seconda", "due"]
+    assert len({m.id for m in cronologia}) == 4
+    assert risultato["steps"] == 0
+
+
 def test_log_nodo_modello(caplog):
     with caplog.at_level(logging.INFO):
         esegui(ModelloFinto([AIMessage("ok")]))
