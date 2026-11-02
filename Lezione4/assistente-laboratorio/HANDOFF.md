@@ -53,10 +53,21 @@ Aggiornato il 2026-11-02, a fine Lezione 4.
 - Il nodo `limite` non è mai stato visto scattare con il modello reale: `gemma-4-e2b-it` chiede un solo orologio per domanda.
 - La prima richiesta della sessione può richiedere fino a circa 2 minuti mentre LM Studio carica il modello.
 - Nel container i timestamp dei log sono in UTC.
-- Non è stata eseguita la revisione finale indipendente dell'intero lavoro prevista dal metodo Superpowers.
+
+## Problemi noti rimandati (dalla revisione finale)
+
+La revisione finale indipendente è stata eseguita: nessun problema critico. I problemi seguenti sono stati annotati e non corretti, per decisione dell'utente.
+
+- **Importante** — Tool call malformata (argomenti non JSON): langchain la mette in `invalid_tool_calls`, `instrada` va a `END` e la tool call resta senza risposta in cronologia; un server rigoroso potrebbe rifiutare tutti i turni successivi (non verificato con LM Studio) (`app/graph.py`).
+- **Minore** — Con lo stdout rediretto su Windows, una risposta con caratteri fuori da cp1252 (per esempio emoji) chiude la sessione con un traceback; console interattiva e Docker non sono interessati (`app/cli.py`).
+- **Minore** — Ogni errore dell'API è presentato come problema di connessione, anche un 400 per contesto esaurito in una sessione lunga (`app/cli.py`).
+- **Minore** — Un `.env` non UTF-8 (per esempio UTF-16, come lo scrive `"..." > .env` in PowerShell 5.1) produce un traceback invece del codice di uscita 2 (`app/config.py`).
+- **Minore** — Con `fuso_orario="Europe"` (una cartella di tzdata) il messaggio d'errore dello strumento contiene un percorso assoluto dell'host (`app/tools.py`).
+- **Minore** — Funziona solo `python -m pytest`, non `pytest` da solo; i documenti indicano già `python -m pytest`.
+- **Minore** — Compose legge `env_file` con un proprio parser, diverso da `app/config.py`; con il `.env.example` attuale non ci sono effetti (non verificato) (`compose.yaml`).
 
 ## Prossimi passi
 
 - Se si vuole, verificare il limite con il modello vero (`MAX_STEPS=1` e una domanda su più città).
-- Revisione finale del codice.
+- Valutare la correzione dei problemi rimandati, a partire dalla tool call malformata.
 - Lezioni successive: altri strumenti, MCP, workflow e RAG (non anticipati in questa versione).
