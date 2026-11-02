@@ -1,6 +1,6 @@
 ### Assistente del laboratorio
 
-Progetto del corso «Deep Learning e LLM: costruire chatbot e agenti». La cartella del progetto è assistente-laboratorio/; all'inizio contiene soltanto questo file. Struttura, dipendenze e comandi verranno definiti con la specifica e il piano.
+Progetto del corso «Deep Learning e LLM: costruire chatbot e agenti». La cartella del progetto è assistente-laboratorio/. Specifica e piano sono in docs/superpowers/.
 
 
 
@@ -49,6 +49,26 @@ L'identificativo è quello restituito dal server (GET /v1/models), mai inventato
 \- Dipendenze motivate, concordate e con versioni fissate.
 
 \- Comandi documentati anche per PowerShell (Windows).
+
+
+
+##### Struttura e comandi
+
+\- app/config.py (lettura di .env, l'ambiente ha la precedenza), app/llm.py (ChatOpenAI verso LM Studio), app/tools.py (tooltime), app/graph.py (StateGraph: nodi modello, strumenti, limite; arco condizionale instrada), app/cli.py (main e ciclo, cronologia in memoria).
+
+\- tests/: test senza modello per ogni modulo; tests/test_reali.py usa LM Studio ed è saltato salvo RUN_REAL_TESTS=1.
+
+\- Variabili in .env (modello: .env.example): LM_BASE_URL, LM_MODEL, MAX_STEPS.
+
+\- Ambiente: Python 3.10, .venv/ creato con python -m venv .venv; dipendenze fissate in requirements.txt.
+
+\- Test sull'host: `.\.venv\Scripts\python.exe -m pytest -v`
+
+\- Prova reale sull'host: `$env:RUN_REAL_TESTS = "1"; .\.venv\Scripts\python.exe -m pytest tests/test_reali.py -v -s; Remove-Item Env:RUN_REAL_TESTS`
+
+\- Avvio: `.\.venv\Scripts\python.exe -m app.cli` oppure `docker compose run --rm assistente`
+
+\- Test nel container: `docker compose run --rm assistente python -m pytest -v` (prova reale: `docker compose run --rm -e RUN_REAL_TESTS=1 assistente python -m pytest tests/test_reali.py -v -s`)
 
 
 
