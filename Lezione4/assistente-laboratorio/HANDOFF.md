@@ -34,29 +34,29 @@ Aggiornato il 2026-11-02, a fine Lezione 4.
 | Prova | Dove | Chi | Esito |
 |---|---|---|---|
 | Test automatici (`pytest`) | host | Claude e utente | 40 passed, 1 skipped |
-| Test automatici (`pytest`) | container | Claude | 40 passed, 1 skipped |
+| Test automatici (`pytest`) | container | Claude e utente | 40 passed, 1 skipped |
 | Chat: memoria del nome su due turni | host, interattiva | utente | superata |
 | Assenza delle righe `HTTP Request: POST` | host, interattiva | utente | superata |
 | Server irraggiungibile (porta sbagliata), uscita con Ctrl+C | host, interattiva | utente | superata |
 | Configurazione non valida → codice 2 | host | Claude e utente | superata |
 | `RUN_REAL_TESTS=1` (Tokyo → `tooltime` con `Asia/Tokyo`) | host | Claude e utente | superata |
 | Chat Tokyo poi Roma con le righe `tool call` nei log | host, interattiva | utente | superata |
-| `RUN_REAL_TESTS=1` | container | Claude | superata (47 s) |
+| `RUN_REAL_TESTS=1` | container | Claude e utente | superata (tool call `tooltime` con `Asia/Tokyo`) |
 | Chat Tokyo poi Roma | container, input tramite pipe (`-T`) | Claude | superata |
-| `.env` assente nell'immagine | container | Claude | superata |
-| Chat interattiva con TTY (`docker compose run --rm assistente`) | container | — | non eseguita |
+| `.env` assente nell'immagine | container | Claude e utente | superata |
+| Build dell'immagine (`docker compose build`) | host | Claude e utente | superata |
+| Chat interattiva con TTY Tokyo poi Roma (`docker compose run --rm assistente`) | container | utente | superata |
 | Limite di passaggi con il modello vero | host | — | non eseguita (coperto solo dai test automatici) |
 
 ## Problemi aperti
 
 - Il nodo `limite` non è mai stato visto scattare con il modello reale: `gemma-4-e2b-it` chiede un solo orologio per domanda.
-- La chat interattiva in Docker con TTY non è ancora stata verificata. È stata provata solo con l'input passato tramite pipe.
 - La prima richiesta della sessione può richiedere fino a circa 2 minuti mentre LM Studio carica il modello.
 - Nel container i timestamp dei log sono in UTC.
 - Non è stata eseguita la revisione finale indipendente dell'intero lavoro prevista dal metodo Superpowers.
 
 ## Prossimi passi
 
-- Verificare la chat interattiva in Docker e, se si vuole, il limite con il modello vero (`MAX_STEPS=1` e una domanda su più città).
+- Se si vuole, verificare il limite con il modello vero (`MAX_STEPS=1` e una domanda su più città).
 - Revisione finale del codice.
 - Lezioni successive: altri strumenti, MCP, workflow e RAG (non anticipati in questa versione).
