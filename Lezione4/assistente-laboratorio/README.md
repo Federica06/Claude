@@ -60,6 +60,32 @@ Non serve un modello attivo:
 .\.venv\Scripts\python.exe -m pytest -v
 ```
 
+## Strumento orologio
+
+Il modello può chiedere lo strumento `tooltime(fuso_orario)` con un nome di fuso IANA (per esempio `Asia/Tokyo`).
+Il grafo lo esegue e restituisce al modello data e ora con offset da UTC, per esempio `2026-11-02T10:08:51+09:00 Asia/Tokyo`.
+Ogni esecuzione compare nei log:
+
+```
+INFO app.graph: risposta del modello: 1 tool call richieste
+INFO app.graph: tool call tooltime args={'fuso_orario': 'Asia/Tokyo'} -> 2026-11-02T10:08:51+09:00 Asia/Tokyo
+```
+
+Le esecuzioni per domanda sono al massimo `MAX_STEPS`. Se il modello ne chiede di più, il grafo si ferma con il messaggio
+`Ho raggiunto il limite di N passaggi con gli strumenti e mi fermo qui senza una risposta completa.`
+
+## Prove reali (LM Studio attivo)
+
+Il test reale chiede al modello «Che ore sono adesso a Tokyo?» e verifica che chiami `tooltime` con `Asia/Tokyo`.
+Senza attivazione esplicita viene saltato:
+
+```powershell
+$env:RUN_REAL_TESTS = "1"; .\.venv\Scripts\python.exe -m pytest tests/test_reali.py -v -s; Remove-Item Env:RUN_REAL_TESTS
+```
+
+Con `-s` si vedono i messaggi scambiati. Prova manuale: avviare la chat, chiedere «Che ore sono adesso a Tokyo?» e poi «E a Roma?».
+Nei log devono comparire le righe `tool call tooltime` con `Asia/Tokyo` e poi `Europe/Rome`.
+
 ## Diagnosi
 
 - **`Configurazione non valida: ...`** (codice di uscita 2): manca una variabile nel `.env` oppure `MAX_STEPS` non è un intero maggiore di zero. Il messaggio indica quale.
