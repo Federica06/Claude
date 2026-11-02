@@ -1,118 +1,118 @@
-### Assistente del laboratorio
+# Assistente del laboratorio
 
 Progetto del corso «Deep Learning e LLM: costruire chatbot e agenti». La cartella del progetto è assistente-laboratorio/. Specifica e piano sono in docs/superpowers/.
 
 
 
-##### Obiettivo
+## Obiettivo
 
 Un'applicazione da terminale in Python che conversa con un modello locale e:
 
-\- organizza il flusso in un grafo LangGraph esplicito (stato, nodi, instradamento riconoscibili);
+- organizza il flusso in un grafo LangGraph esplicito (stato, nodi, instradamento riconoscibili);
 
-\- usa un modello servito da LM Studio, che resta sul computer host;
+- usa un modello servito da LM Studio, che resta sul computer host;
 
-\- conserva la cronologia della conversazione per la durata della sessione (nessuna persistenza);
+- conserva la cronologia della conversazione per la durata della sessione (nessuna persistenza);
 
-\- offre uno strumento orologio con fuso orario esplicito, richiesto dal modello tramite tool calling ed eseguito davvero dal programma;
+- offre uno strumento orologio con fuso orario esplicito, richiesto dal modello tramite tool calling ed eseguito davvero dal programma;
 
-\- si avvia anche con Docker Compose.
-
-
-
-##### Confini
-
-\- Implementare solo i requisiti concordati. Altri strumenti, MCP, workflow e RAG arriveranno nelle lezioni successive: non anticiparli.
-
-\- Niente interfacce grafiche, servizi cloud o framework non concordati.
-
-\- Lavorare solo dentro assistente-laboratorio/. La repository contiene altre lezioni: non leggerle per copiarne il codice e non modificarle.
-
-\- Lavorare nel branch corrente; nessun branch o worktree nuovo se non richiesto.
+- si avvia anche con Docker Compose.
 
 
 
-##### Scelte tecniche
+## Confini
 
-\- Python, codice sincrono e moduli piccoli, con una separazione semplice tra grafo, collegamento al modello, strumenti e interfaccia da terminale.
+- Implementare solo i requisiti concordati. Altri strumenti, MCP, workflow e RAG arriveranno nelle lezioni successive: non anticiparli.
 
-\- LM Studio sull'host, raggiunto tramite la sua API compatibile con OpenAI.
+- Niente interfacce grafiche, servizi cloud o framework non concordati.
 
-\- Indirizzo del server e identificativo del modello solo da variabili d'ambiente.
+- Lavorare solo dentro assistente-laboratorio/. La repository contiene altre lezioni: non leggerle per copiarne il codice e non modificarle.
+
+- Lavorare nel branch corrente; nessun branch o worktree nuovo se non richiesto.
+
+
+
+## Scelte tecniche
+
+- Python, codice sincrono e moduli piccoli, con una separazione semplice tra grafo, collegamento al modello, strumenti e interfaccia da terminale.
+
+- LM Studio sull'host, raggiunto tramite la sua API compatibile con OpenAI.
+
+- Indirizzo del server e identificativo del modello solo da variabili d'ambiente.
 
 L'identificativo è quello restituito dal server (GET /v1/models), mai inventato.
 
-\- Un file di configurazione di esempio senza credenziali; il file reale resta fuori da Git.
+- Un file di configurazione di esempio senza credenziali; il file reale resta fuori da Git.
 
-\- Docker Compose per l'applicazione; LM Studio non va containerizzato.
+- Docker Compose per l'applicazione; LM Studio non va containerizzato.
 
-\- Dipendenze motivate, concordate e con versioni fissate.
+- Dipendenze motivate, concordate e con versioni fissate.
 
-\- Comandi documentati anche per PowerShell (Windows).
-
-
-
-##### Struttura e comandi
-
-\- app/config.py (lettura di .env, l'ambiente ha la precedenza), app/llm.py (ChatOpenAI verso LM Studio), app/tools.py (tooltime), app/graph.py (StateGraph: nodi modello, strumenti, limite; arco condizionale instrada), app/cli.py (main e ciclo, cronologia in memoria).
-
-\- tests/: test senza modello per ogni modulo; tests/test_reali.py usa LM Studio ed è saltato salvo RUN_REAL_TESTS=1.
-
-\- Variabili in .env (modello: .env.example): LM_BASE_URL, LM_MODEL, MAX_STEPS.
-
-\- Ambiente: Python 3.10, .venv/ creato con python -m venv .venv; dipendenze fissate in requirements.txt.
-
-\- Test sull'host: `.\.venv\Scripts\python.exe -m pytest -v`
-
-\- Prova reale sull'host: `$env:RUN_REAL_TESTS = "1"; .\.venv\Scripts\python.exe -m pytest tests/test_reali.py -v -s; Remove-Item Env:RUN_REAL_TESTS`
-
-\- Avvio: `.\.venv\Scripts\python.exe -m app.cli` oppure `docker compose run --rm assistente`
-
-\- Test nel container: `docker compose run --rm assistente python -m pytest -v` (prova reale: `docker compose run --rm -e RUN_REAL_TESTS=1 assistente python -m pytest tests/test_reali.py -v -s`)
+- Comandi documentati anche per PowerShell (Windows).
 
 
 
-##### Metodo: Superpowers
+## Struttura e comandi
 
-\- Usare le skill di Superpowers per brainstorming, specifica, piano, implementazione e verifica.
+- app/config.py (lettura di .env, l'ambiente ha la precedenza), app/llm.py (ChatOpenAI verso LM Studio), app/tools.py (tooltime), app/graph.py (StateGraph: nodi modello, strumenti, limite; arco condizionale instrada), app/cli.py (main e ciclo, cronologia in memoria).
 
-\- Non scrivere codice prima che io abbia approvato la specifica e poi il piano.
+- tests/: test senza modello per ogni modulo; tests/test_reali.py usa LM Studio ed è saltato salvo RUN_REAL_TESTS=1.
 
-\- Salvare specifica e piano in assistente-laboratorio/docs/superpowers/.
+- Variabili in .env (modello: .env.example): LM_BASE_URL, LM_MODEL, MAX_STEPS.
 
-\- Procedere per incrementi piccoli, ciascuno verificato prima del commit.
+- Ambiente: Python 3.10, .venv/ creato con python -m venv .venv; dipendenze fissate in requirements.txt.
 
+- Test sull'host: `.\.venv\Scripts\python.exe -m pytest -v`
 
+- Prova reale sull'host: `$env:RUN_REAL_TESTS = "1"; .\.venv\Scripts\python.exe -m pytest tests/test_reali.py -v -s; Remove-Item Env:RUN_REAL_TESTS`
 
-##### Test e verifiche
+- Avvio: `.\.venv\Scripts\python.exe -m app.cli` oppure `docker compose run --rm assistente`
 
-\- Test automatici ripetibili che non richiedono un modello attivo (grafo, cronologia, instradamento, strumento con istante controllato).
-
-\- Prove reali con LM Studio e con Docker tenute separate e attivate esplicitamente.
-
-\- Una risposta simulata non dimostra che il modello locale sappia usare lo strumento.
-
-\- Nel resoconto indicare che cosa è stato eseguito, con quale esito, e che cosa resta da provare.
+- Test nel container: `docker compose run --rm assistente python -m pytest -v` (prova reale: `docker compose run --rm -e RUN_REAL_TESTS=1 assistente python -m pytest tests/test_reali.py -v -s`)
 
 
-##### Git
 
-\- Conventional Commits in italiano, per esempio feat(grafo): ...,
+## Metodo: Superpowers
+
+- Usare le skill di Superpowers per brainstorming, specifica, piano, implementazione e verifica.
+
+- Non scrivere codice prima che io abbia approvato la specifica e poi il piano.
+
+- Salvare specifica e piano in assistente-laboratorio/docs/superpowers/.
+
+- Procedere per incrementi piccoli, ciascuno verificato prima del commit.
+
+
+
+## Test e verifiche
+
+- Test automatici ripetibili che non richiedono un modello attivo (grafo, cronologia, instradamento, strumento con istante controllato).
+
+- Prove reali con LM Studio e con Docker tenute separate e attivate esplicitamente.
+
+- Una risposta simulata non dimostra che il modello locale sappia usare lo strumento.
+
+- Nel resoconto indicare che cosa è stato eseguito, con quale esito, e che cosa resta da provare.
+
+
+## Git
+
+- Conventional Commits in italiano, per esempio feat(grafo): ...,
 
 test(strumenti): ..., docs: ....
 
-\- Prima di ogni commit: git status, controllo del diff, staging selettivo dei soli file
+- Prima di ogni commit: git status, controllo del diff, staging selettivo dei soli file
 
 pertinenti.
 
-\- Mai versionare credenziali, .env, ambienti virtuali, cache o pesi dei modelli.
+- Mai versionare credenziali, .env, ambienti virtuali, cache o pesi dei modelli.
 
-\- Push soltanto su mia richiesta.
+- Push soltanto su mia richiesta.
 
 
-##### Documentazione
+## Documentazione
 
-\- Tenere aggiornato il README con configurazione, avvio, test e diagnosi, riportando solo comandi verificati.
+- Tenere aggiornato il README con configurazione, avvio, test e diagnosi, riportando solo comandi verificati.
 
-\- Aggiornare questo file quando cambiano convenzioni stabili (struttura, comandi di test, regole di lavoro), non per annotare l'avanzamento.
+- Aggiornare questo file quando cambiano convenzioni stabili (struttura, comandi di test, regole di lavoro), non per annotare l'avanzamento.
 
