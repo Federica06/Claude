@@ -4,8 +4,9 @@ Aggiornato il 2026-11-02, a fine Lezione 4.
 
 ## Stato e ultimo commit
 
-- Branch `main`, nessun push eseguito.
-- Ultimo commit di codice: `8d49d0d feat(docker): avvio con Docker Compose verso LM Studio sull'host`. Lo segue il commit di documentazione che contiene questo file (`docs: handoff, struttura e comandi di test`).
+- Branch `main`. Il push lo esegue l'utente a fine lavoro.
+- Ultimo commit di codice: `8d49d0d feat(docker): avvio con Docker Compose verso LM Studio sull'host`. Dopo di esso ci sono solo commit di documentazione.
+- Il commit finale per la consegna non può essere scritto in questo file: si ricava con `git rev-parse --short HEAD`.
 - Implementati tutti e quattro gli incrementi del piano (`docs/superpowers/plans/2026-11-02-assistente-laboratorio.md`), secondo la specifica `docs/superpowers/specs/2026-11-02-assistente-laboratorio-design.md`.
 
 ## Cosa funziona
