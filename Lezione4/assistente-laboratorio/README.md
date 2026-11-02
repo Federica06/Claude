@@ -86,9 +86,41 @@ $env:RUN_REAL_TESTS = "1"; .\.venv\Scripts\python.exe -m pytest tests/test_reali
 Con `-s` si vedono i messaggi scambiati. Prova manuale: avviare la chat, chiedere «Che ore sono adesso a Tokyo?» e poi «E a Roma?».
 Nei log devono comparire le righe `tool call tooltime` con `Asia/Tokyo` e poi `Europe/Rome`.
 
+## Docker
+
+LM Studio resta sull'host e non viene containerizzato. Il servizio `assistente` di `compose.yaml` legge lo stesso `.env` (che non entra nell'immagine).
+Sovrascrive solo `LM_BASE_URL` con `http://host.docker.internal:1234/v1`, l'indirizzo dell'host visto dal container.
+
+Build dell'immagine:
+
+```powershell
+docker compose build
+```
+
+Chat (interattiva, quindi con `run` e non con `up`):
+
+```powershell
+docker compose run --rm assistente
+```
+
+Test automatici nel container:
+
+```powershell
+docker compose run --rm assistente python -m pytest -v
+```
+
+Prova reale nel container (LM Studio attivo sull'host):
+
+```powershell
+docker compose run --rm -e RUN_REAL_TESTS=1 assistente python -m pytest tests/test_reali.py -v -s
+```
+
+Nel container i timestamp dei log sono in UTC. Non cambia nulla per lo strumento, che riceve sempre un fuso esplicito.
+
 ## Diagnosi
 
 - **`Configurazione non valida: ...`** (codice di uscita 2): manca una variabile nel `.env` oppure `MAX_STEPS` non è un intero maggiore di zero. Il messaggio indica quale.
 - **`Errore: impossibile contattare il modello...`**: LM Studio non è avviato o `LM_BASE_URL` è sbagliato. Prima dell'errore il client riprova due volte (righe `Retrying request` nei log). Per controllare che il server risponda: `(Invoke-RestMethod http://127.0.0.1:1234/v1/models).data.id`.
 - **Id del modello sbagliato**: nelle prove, con un `LM_MODEL` inesistente LM Studio non ha restituito errori e ha risposto con il modello già caricato. Un id sbagliato quindi può passare inosservato. Va controllato che `LM_MODEL` coincida con uno degli id restituiti dal comando qui sopra.
+- **Il container non raggiunge LM Studio** (`Errore: impossibile contattare il modello...` solo in Docker): nelle prove (Docker Desktop con WSL2) il container ha raggiunto LM Studio tramite `host.docker.internal` senza modifiche. Se in un'altra configurazione non succede, controllare che Docker Desktop sia avviato e che il server di LM Studio sia attivo sulla porta 1234. Un'opzione da provare è «Serve on Local Network» nelle impostazioni del server di LM Studio, ma nelle prove non è stata necessaria e non è stata verificata.
 - **La prima risposta è lenta**: LM Studio può impiegare tempo a caricare il modello alla prima richiesta (nelle prove fino a circa due minuti). Il timeout del client è di 300 secondi.
